@@ -7,29 +7,33 @@
 
 import SwiftUI
 
-
-
 struct ContentView: View {
-    let columns = [GridItem(.adaptive(minimum: 65))]
-    
-    // default theme is animals
-    @State var theme = ["🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🦆", "🦉", "🦇", "🐝", "🐴"]
-
     var body: some View {
+        TabView{
+            GameView(theme: .flag).tabItem { Image(systemName: "flag") }.tag(1)
+                .toolbar(.visible, for: .tabBar)
+                .toolbarBackground(Color.cyan, for: .tabBar)
+            GameView(theme: .food).tabItem { Image(systemName: "carrot") }.tag(2)
+            GameView(theme: .fun).tabItem { Image(systemName: "football") }.tag(3)
+            GameView(theme: .animal).tabItem { Image(systemName: "pawprint") }.tag(4)
+        }
+    }
+}
+
+struct GameView: View{
+    let columns = [GridItem(.adaptive(minimum: 65))]
+    let theme: GameType
+    
+    var body: some View{
+        var themeValues = getTheme(game: theme)
         VStack{
             Text("Memorize!")
                 .font(.largeTitle)
             LazyVGrid(columns: columns, spacing:10){
-                ForEach(theme[0..<theme.count], id: \.self){ element in
+                ForEach(themeValues[0..<themeValues.count], id: \.self){ element in
                     CardView(face: element).aspectRatio(2/3, contentMode: .fit)
                 }
             }.padding(.horizontal)
-        }.padding(.horizontal)
-        HStack{
-            SetFlagTheme(theme: $theme)
-            SetFoodTheme(theme: $theme)
-            SetFunTheme(theme: $theme)
-            SetAnimalTheme(theme: $theme)
         }.padding(.horizontal)
     }
 }
@@ -71,67 +75,24 @@ struct CardView: View {
     }
 }
 
-// THEME BUTTONS ---------------------------------------------------------
-
-struct SetFlagTheme: View{
-    let flags = ["🇾🇪", "🇦🇪", "🇹🇷", "🇹🇳", "🇹🇲", "🇸🇾", "🇸🇩", "🇸🇦", "🇸🇳", "🇵🇰", "🇳🇪", "🇳🇬", "🇲🇲", "🇲🇻", "🇲🇷", "🇯🇴", "🇰🇼", "🇱🇧", "🇮🇷", "🇮🇶"]
-    @Binding var theme: [String]
-    
-    var body: some View{
-        Button {
-            theme = flags.shuffled()
-        } label: {
-            Image(systemName: "flag")
-                .font(.largeTitle)
-        }
-
-    }
+enum GameType{
+    case flag,food,fun,animal
 }
 
-struct SetFoodTheme: View{
-    let food = ["🍎", "🍐", "🍊", "🍋", "🫐", "🍓", "🍇", "🍉", "🍌", "🍒", "🥭", "🍍", "🥥", "🥒", "🫑", "🧅", "🧄", "🥕", "🌽", "🥦"]
-    @Binding var theme: [String]
-    
-    var body: some View{
-        Button {
-            theme = food.shuffled()
-        } label: {
-            Image(systemName: "carrot")
-                .font(.largeTitle)
-        }
-
+func getTheme(game: GameType) -> [String] {
+    switch(game){
+        case .animal:
+           return ["🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🦆", "🦉", "🦇", "🐝", "🐴"]
+        case .flag:
+            return ["🇾🇪", "🇦🇪", "🇹🇷", "🇹🇳", "🇹🇲", "🇸🇾", "🇸🇩", "🇸🇦", "🇸🇳", "🇵🇰", "🇳🇪", "🇳🇬", "🇲🇲", "🇲🇻", "🇲🇷", "🇯🇴", "🇰🇼", "🇱🇧", "🇮🇷", "🇮🇶"]
+        case .food:
+            return ["🍎", "🍐", "🍊", "🍋", "🫐", "🍓", "🍇", "🍉", "🍌", "🍒", "🥭", "🍍", "🥥", "🥒", "🫑", "🧅", "🧄", "🥕", "🌽", "🥦"]
+        case .fun:
+            return ["⛸️", "🥊", "🥋", "🪁", "🏀", "⚽️", "🏈", "⚾️", "🎾", "🏐", "🥏", "⛳️", "🏹", "⛷️", "🪂", "🏂", "🧗‍♀️", "🚣🏾‍♀️", "🚴🏿‍♀️", "🎹"]
     }
 }
-
-struct SetFunTheme: View{
-    let fun = ["⛸️", "🥊", "🥋", "🪁", "🏀", "⚽️", "🏈", "⚾️", "🎾", "🏐", "🥏", "⛳️", "🏹", "⛷️", "🪂", "🏂", "🧗‍♀️", "🚣🏾‍♀️", "🚴🏿‍♀️", "🎹"]
-    @Binding var theme: [String]
     
-    var body: some View{
-        Button {
-            theme = fun.shuffled()
-        } label: {
-            Image(systemName: "football")
-                .font(.largeTitle)
-        }
-
-    }
-}
-
-struct SetAnimalTheme: View{
-    let animals = ["🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🦆", "🦉", "🦇", "🐝", "🐴"]
-    @Binding var theme: [String]
-    
-    var body: some View{
-        Button {
-            theme = animals.shuffled()
-        } label: {
-            Image(systemName: "pawprint")
-                .font(.largeTitle)
-        }
-
-    }
-}
+   
 // THEME BUTTONS ---------------------------------------------------------
 
 struct ContentView_Previews: PreviewProvider {
